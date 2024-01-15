@@ -1,0 +1,29 @@
+users:
+  - name: coolfy
+    groups: users, admin
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    shell: /bin/bash
+    ssh_authorized_keys:
+      - ssh-ed25519 ~/.ssh/coolify-hetzner.pub
+package_update: true
+package_upgrade: true
+packages:
+  - fail2ban
+  - ufw
+runcmd:
+  - ufw allow 80 443
+  - printf "[sshd]\nenabled = true\nbanaction = iptables-multiport" > /etc/fail2ban/jail.local
+  - systemctl enable fail2ban
+  - systemctl start fail2ban
+  - ufw allow 'OpenSSH'
+  - ufw enable
+  - sed -ie '/^PermitRootLogin/s/^.*$/PermitRootLogin no/' /etc/ssh/sshd_config
+  - sed -ie '/^PasswordAuthentication/s/^.*$/PasswordAuthentication no/' /etc/ssh/sshd_config
+  - sed -ie '/^X11Forwarding/s/^.*$/X11Forwarding no/' /etc/ssh/sshd_config
+  - sed -ie '/^#MaxAuthTries/s/^.*$/MaxAuthTries 5/' /etc/ssh/sshd_config
+  - sed -ie '/^#AllowTcpForwarding/s/^.*$/AllowTcpForwarding no/' /etc/ssh/sshd_config
+  - sed -ie '/^#AllowAgentForwarding/s/^.*$/AllowAgentForwarding no/' /etc/ssh/sshd_config
+  - sed -ie '/^#AuthorizedKeysFile/s/^.*$/AuthorizedKeysFile .ssh/authorized_keys/' /etc/ssh/sshd_config
+  - sed -i '$a AllowUsers coolfy' /etc/ssh/sshd_config
+  - systemctl restart ssh
+  - curl -fsSL https://cdn.coollabs.io/coolify/install.sh | bash
