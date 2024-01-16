@@ -92,13 +92,37 @@ resource "hcloud_firewall" "default" {
   }
 
   rule {
-    destination_ips = ["0.0.0.0/0"]
-    direction       = "out"
-    port            = "8000"
+    destination_ips = []
+    direction       = "in"
+    port            = "3000"
     protocol        = "tcp"
     source_ips = [
       "0.0.0.0/0",
       "::/0",
     ]
   }
+
+rule {
+    destination_ips = []
+    direction       = "in"
+    port            = "9000-9100"
+    protocol        = "tcp"
+    source_ips = [
+      "0.0.0.0/0",
+      "::/0",
+    ]
+  }
+
+  rule {
+    destination_ips = ["0.0.0.0/0"]
+    direction       = "out"
+    port            = "9000-9100"
+    protocol        = "tcp"
+    source_ips = [
+      "0.0.0.0/0",
+      "::/0",
+    ]
+  }
+
+
 }

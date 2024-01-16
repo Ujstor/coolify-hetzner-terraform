@@ -1,6 +1,6 @@
 variable "hcloud_token" {
   sensitive = true
-  default = "l4UcI5BlyaIyZF7D8lzbvaGdHpVubiXEEpWujM4TIF5S3npsM5dSyMWfNqBIIQzO"
+  default = "API_KEY"
 }
 
 variable "location" {

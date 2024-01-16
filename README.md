@@ -2,7 +2,7 @@
 
 Deploy [Coolify](https://coolify.io/docs/) on Hetzner Cloud using the Terraform. This project aims to create a highly optimized, auto-upgradable, highly available and cost-effective self hosted Coolify instance for deployng your projects on Hetzner Cloud.
 
-Default configuration will create a one server in Germnay with 2 CPU, 4 GB RAM, 40 GB disk space, 20TB out traffic for 5.77EUR/month. Change configuration to your needs in `variables.tf` file, see [Additional Configuration](#Additional-Configuration).
+Default configuration will create a one server in Falkenstein Germnay with 2 VCPU, 4 GB RAM, 40 GB disk space, 20TB out traffic for 5.77EUR/month. Change configuration to your needs in `variables.tf` file, see [Additional Configuration](#Additional-Configuration).
 
 ## Prerequisites
 
@@ -27,11 +27,6 @@ Generate a passphrase-less SSH key pair to be used for the cluster.
 
 ```shell
 ssh-keygen -t ed25519 -N "" -f ~/.ssh/coolify-hetzner
-```
-Cat pub key and populate `PUB-SSH-KEY=` in `server-config.sh`. In same file add `USER_PASSWORD` for sudo access when you ssh into created server.
-
-```shell
-cat ~/.ssh/coolify-hetzner.pub
 ```
 
 ### 2. Generate Hetzner API Token
@@ -60,13 +55,19 @@ terraform apply -auto-approve
 When Terraform finishes, give server a couple of minutes to install all dependencies. Coolify's UI will be available at: 
 
 ```shell
+# Coolify version 3
+SERVER_IP:3000
+
+# Coolify version 4
 SERVER_IP:8000
 ```
+Default installed Coolify version is 3, because it is easy to navigate for new users and ver. 4 is still in beta.
+You can chage version in `server-config.sh` 
 
 If needed, you can ssh into the server with the following command:
 
 ```shell
-ssh coolify@<server-ip> -i ~/.ssh/coolify-hetzner.pub
+ssh root@<server-ip> -i ~/.ssh/coolify-hetzner.pub
 ```
 
 ### 5. Destroy infrastructure
@@ -81,9 +82,9 @@ terraform destroy -auto-approve
 
 ### 1. Firewall Rules
 
-To make the server access more secure, we created firewall rules that only allow traffic on ports 22, 80, 443, 6001 and 8000
+To make the server access more secure, we created firewall rules that only allow traffic on certain ports.
 
-Add more rules in `firewall.tf` file if you use db that you want to access from outside.
+Add more rules in `firewall.tf` file if you use service with specific port.
 
 ```terraform
 rule {
@@ -110,8 +111,8 @@ rule {
 
 ### 2. List images, servers types and locations
 
-You can check the list of images and servers on official Hetzner Cloud website.
-Also, you can  query [REST API](https://docs.hetzner.cloud/#servers-create-a-server) with the same API_TOKEN we created earlier. Then, all our information needs are just a curl away.
+Check the list of images, servers and prices on official Hetzner Cloud [website](https://www.hetzner.com/cloud).
+Also, you can  query [REST API](https://docs.hetzner.cloud/#servers-create-a-server) with the same API_TOKEN we created earlier.
 
 ```shell
 export TF_HETZNER_TOKE= <API_TOKEN>
