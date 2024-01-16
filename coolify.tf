@@ -8,7 +8,7 @@ terraform {
 }
 
 provider "hcloud" {
-  token   = var.hcloud_token
+  token = var.hcloud_token
 }
 
 resource "hcloud_ssh_key" "default" {
@@ -17,14 +17,19 @@ resource "hcloud_ssh_key" "default" {
 }
 
 resource "hcloud_server" "coolfy" {
-  count       = var.instances
-  name        = "coolfy-server-${count.index}"
-  image       = var.os_type
-  server_type = var.server_type
-  location    = var.location
-  ssh_keys    = [hcloud_ssh_key.default.id]
+  count        = var.instances
+  name         = "coolfy-${count.index}"
+  image        = var.os_type
+  server_type  = var.server_type
+  location     = var.location
+  ssh_keys     = [hcloud_ssh_key.default.id]
+  firewall_ids = [hcloud_firewall.default.id]
+  user_data    = file("server-config.sh")
   labels = {
     type = "coolfy"
   }
-  user_data = file("server-config.yaml")
+}
+
+output "server_ip" {
+  value = [for instance in hcloud_server.coolfy : instance.ipv4_address]
 }
