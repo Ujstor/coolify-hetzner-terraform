@@ -18,13 +18,13 @@ resource "tls_private_key" "ssh_key" {
 
 resource "hcloud_ssh_key" "default" {
   depends_on  = [tls_private_key.ssh_key]
-  name        = "coolfy_key"
+  name        = "coolify_key"
   public_key  = tls_private_key.ssh_key.public_key_openssh
 }
 
-resource "hcloud_server" "coolfy" {
+resource "hcloud_server" "coolify" {
   count        = var.instances
-  name         = "coolfy-${count.index}"
+  name         = "coolify-${count.index}"
   image        = var.os_type
   server_type  = var.server_type
   location     = var.location
@@ -32,25 +32,20 @@ resource "hcloud_server" "coolfy" {
   firewall_ids = [hcloud_firewall.default.id]
   user_data    = file("server-config.sh")
   labels = {
-    type = "coolfy"
+    type = "coolify"
   }
 
   provisioner "local-exec" {
     command = <<-EOT
-      echo "${tls_private_key.ssh_key.private_key_pem}" > ~/.ssh/coolfy_key.pem &&
-      chmod 600 ~/.ssh/coolfy_key.pem
+      echo "${tls_private_key.ssh_key.private_key_pem}" > ~/.ssh/coolify_key.pem &&
+      chmod 600 ~/.ssh/coolify_key.pem
     EOT
   }
 }
 
 
 output "server_ip" {
-  value = [for instance in hcloud_server.coolfy : instance.ipv4_address]
-}
-
-output "private_key" {
-  value = tls_private_key.ssh_key.private_key_pem
-  sensitive=true
+  value = [for instance in hcloud_server.coolify : instance.ipv4_address]
 }
 
 output "public_key" {

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-TF_HETZNER_TOKEN=4rygDBAyeudAmt6ZFp3QQs5MIx7nN3U8PUaHGhyybwrBRuvo0vzXyRsJ034vdLvj
+TF_HETZNER_TOKEN=
 
 if [ ! -d "data" ]; then
     mkdir data
