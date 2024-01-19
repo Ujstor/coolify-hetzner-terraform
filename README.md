@@ -2,7 +2,7 @@
 
 Deploy [Coolify](https://coolify.io/docs/) on Hetzner Cloud using the Terraform. This project aims to create a highly optimized, auto-upgradable, highly available and cost-effective self hosted Coolify instance for deployng your projects on Hetzner Cloud.
 
-Default configuration will create a one server in Falkenstein Germnay with 2 VCPU, 4 GB RAM, 40 GB disk space, 20TB out traffic for 5.77EUR/month. Change configuration to your needs in `variables.tf` file, see [Additional Configuration](#Additional-Configuration).
+Default configuration will create a one server in Falkenstein Germnay with 2 VCPU, 4 GB RAM, 40 GB disk space, 20TB out traffic for 5.77EUR/month. Change configuration to your needs in `variables.tf` file, see Additional Configuration
 
 ## Prerequisites
 
@@ -21,25 +21,17 @@ sudo apt update && sudo apt install terraform
 
 ## Deployment Steps
 
-### 1. Generate SSH Keys
-
-Generate a passphrase-less SSH key pair to be used for the cluster.
-
-```shell
-ssh-keygen -t ed25519 -N "" -f ~/.ssh/coolify-hetzner
-```
-
-### 2. Generate Hetzner API Token
+### 1. Generate Hetzner API Token
 
 Create new project in Hetzner console https://console.hetzner.cloud/projects 
 
 Obtain API token from Hetzner console that will be used by Terraform to interact with the platform. 
 Navigate to your project and click on SECURITY > API TOKENS > GENERATE API (give read/write access)
 
-Paste API token in the `hcloud_token` variable in `variables.tf`.
+Paste API token in the `hcloud_token` variable in `variables.tf`. More secure way to store API token is to create `.auto.tfvars` file in the root of your project and paste API token there, sintax is same as in .env file (hcloud_token = "API_TOKEN"). This will overwrite default value. In same way other variabels can be changed from default values without having to change them in the code.
 
 
-### 3. Initialize and Apply Terraform
+### 2. Initialize and Apply Terraform
 
 Initialize Terraform and apply the configuration:
 
@@ -50,7 +42,7 @@ terraform validate
 terraform apply -auto-approve
 ```
 
-### 4. OPEN UI or SSH into the server
+### 3. Open UI or SSH into the server
 
 When Terraform finishes, give server a couple of minutes to install all dependencies. Coolify's UI will be available at: 
 
@@ -67,10 +59,10 @@ You can chage version in `server-config.sh`
 If needed, you can ssh into the server with the following command:
 
 ```shell
-ssh root@<server-ip> -i ~/.ssh/coolify-hetzner.pub
+ssh root@<server-ip> -i ~/.ssh/coolify_key.pem
 ```
 
-### 5. Destroy infrastructure
+### 4. Destroy infrastructure
 
 To destroy the infrastructure run the following command:
 
@@ -114,6 +106,8 @@ rule {
 Check the list of images, servers and prices on official Hetzner Cloud [website](https://www.hetzner.com/cloud).
 Also, you can  query [REST API](https://docs.hetzner.cloud/#servers-create-a-server) with the same API_TOKEN we created earlier.
 
+Only Debian and Ubuntu images are supported.
+
 ```shell
 export TF_HETZNER_TOKE= <API_TOKEN>
 
@@ -129,3 +123,5 @@ curl \
  -H "Authorization: Bearer $TF_HETZNER_TOKEN" \
  'https://api.hetzner.cloud/v1/locations'
 ```
+
+You can use fetch-data.sh to fetch the data from the API and save it to .json in data folder. Images are filtered  by type and architecture and only x86 servers are listed, ARM is excluded.

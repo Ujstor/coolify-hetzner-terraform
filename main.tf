@@ -11,9 +11,15 @@ provider "hcloud" {
   token = var.hcloud_token
 }
 
+resource "tls_private_key" "ssh_key" {
+  algorithm = "RSA"
+  rsa_bits  = 4096
+}
+
 resource "hcloud_ssh_key" "default" {
-  name       = "hetzner_key"
-  public_key = file("~/.ssh/coolify-hetzner.pub")
+  depends_on  = [tls_private_key.ssh_key]
+  name        = "coolfy_key"
+  public_key  = tls_private_key.ssh_key.public_key_openssh
 }
 
 resource "hcloud_server" "coolfy" {
@@ -28,8 +34,25 @@ resource "hcloud_server" "coolfy" {
   labels = {
     type = "coolfy"
   }
+
+  provisioner "local-exec" {
+    command = <<-EOT
+      echo "${tls_private_key.ssh_key.private_key_pem}" > ~/.ssh/coolfy_key.pem &&
+      chmod 600 ~/.ssh/coolfy_key.pem
+    EOT
+  }
 }
+
 
 output "server_ip" {
   value = [for instance in hcloud_server.coolfy : instance.ipv4_address]
+}
+
+output "private_key" {
+  value = tls_private_key.ssh_key.private_key_pem
+  sensitive=true
+}
+
+output "public_key" {
+  value = tls_private_key.ssh_key.public_key_openssh
 }

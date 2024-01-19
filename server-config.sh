@@ -1,13 +1,39 @@
 #!/bin/bash
 
+LOG_FILE="/root/script_log.txt"
+
 if [ "$(id -u)" -ne 0 ]; then
   echo "This script must be run as root. Exiting..."
   exit 1
 fi
 
-apt-get update
-apt-get upgrade -y
-apt-get install -y ufw fail2ban
+# Redirect stdout and stderr to the log file
+exec > >(tee -a "$LOG_FILE") 2>&1
+
+echo "Script started at $(date)"
+
+# Detect the operating system
+if [ -f /etc/os-release ]; then
+    source /etc/os-release
+    OS=$ID
+elif [ -f /etc/debian_version ]; then
+    OS="debian"
+else
+    echo "Unsupported operating system. Exiting..."
+    exit 1
+fi
+
+case $OS in
+  debian|ubuntu)
+    apt-get update
+    apt-get upgrade -y
+    apt-get install -y ufw fail2ban
+    ;;
+  *)
+    echo "Unsupported operating system. Exiting..."
+    exit 1
+    ;;
+esac
 
 # Configure ufw rules
 ufw allow 22
@@ -37,8 +63,11 @@ sed -i '$a AllowUsers root' /etc/ssh/sshd_config
 systemctl restart ssh
 
 # Install coolify
-#ver.3
-curl -fsSL https://get.coollabs.io/coolify/install.sh -o install.sh && sudo bash ./install.sh -f
+# ver.3
+(curl -fsSL https://get.coollabs.io/coolify/install.sh -o install.sh && sudo bash ./install.sh -f) 2>&1 | tee -a "$LOG_FILE"
 
-#ver.4
-#curl -fsSL https://cdn.coollabs.io/coolify/install.sh | bash
+# ver.4
+# (curl -fsSL https://cdn.coollabs.io/coolify/install.sh | bash) 2>&1 | tee -a "$LOG_FILE"
+
+
+echo "Script completed at $(date)"
