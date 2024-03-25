@@ -1,6 +1,6 @@
 #!/bin/bash
 
-TF_HETZNER_TOKEN=
+TF_HETZNER_TOKEN="xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
 
 if [ ! -d "data" ]; then
     mkdir data

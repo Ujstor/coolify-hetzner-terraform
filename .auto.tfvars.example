@@ -1,0 +1,5 @@
+hcloud_token = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+location = "fsn1"
+instances = "1"
+server_type = "cx21"
+os_type = "debian-12"

@@ -46,7 +46,7 @@ ufw allow 9000:9100/tcp
 ufw --force enable
 
 # Configure fail2ban
-printf "[sshd]\nenabled = true\nbanaction = iptables-multiport" > /etc/fail2ban/jail.local
+printf "[sshd]\nenabled = true\nport = ssh\nfilter = sshd\nlogpath = /var/log/fail2ban.log\nbanaction = iptables-multiport" > /etc/fail2ban/jail.local
 systemctl enable fail2ban
 systemctl start fail2ban
 

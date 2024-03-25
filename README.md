@@ -8,7 +8,7 @@ Default configuration will create a one server in Falkenstein Germnay with 2 VCP
 
 Before you begin, ensure you have the following:
 
-- A Hetzner Cloud account. You can sign up for one [here](https://hetzner.cloud/?ref=Ix9xCKNxJriM) (free €⁠20 in cloud credits for new users)
+- A Hetzner Cloud account. You can sign up [here](https://hetzner.cloud/?ref=Ix9xCKNxJriM) (free €⁠20 in cloud credits for new users)
 - [Terraform](https://www.terraform.io/downloads.html) command-line tool installed
  
  Install Terraform:
